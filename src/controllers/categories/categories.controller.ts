@@ -5,8 +5,16 @@ const prisma = new PrismaClient();
 class CategoriesController {
   static async index(req: any, response: any) {
     try {
-      const users = await prisma.user.findMany();
-      response.json(users);
+      const data = await prisma.categories.findMany({
+        where: {
+          parent_id: null,
+        },
+        include: {
+          subcategories: true,
+        },
+      });
+
+      response.json(data);
     } catch (error) {
       response.status(500).json({ error: error });
     }

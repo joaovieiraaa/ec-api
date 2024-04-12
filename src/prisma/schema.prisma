@@ -1,0 +1,25 @@
+datasource db {
+    provider = "mysql"
+    url      = "mysql://root@localhost:3306/ec_api"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+// CATEGORIES
+model Categories {
+    id            Int          @id @default(autoincrement())
+    parent        Categories?  @relation("Subcategories", fields: [parent_id], references: [id])
+    parent_id     Int?
+    name          Json
+    description   Json
+    slug          Json
+    color         String?
+    order         Int?
+    active        Boolean
+    is_deleted    Boolean
+    created_at    DateTime     @default(now())
+    updated_at    DateTime     @updatedAt
+    subcategories Categories[] @relation("Subcategories")
+}
