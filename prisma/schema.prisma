@@ -1,0 +1,23 @@
+datasource db {
+    provider = "mysql"
+    url      = "mysql://root@localhost:3306/ecommerce"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+// CATEGORIES
+model Categories {
+    id          Int      @id @default(autoincrement())
+    parent_id   Int
+    name        String
+    description String
+    slug        String
+    color       String
+    order       Int
+    active      Boolean
+    is_deleted  Boolean
+    created_at  DateTime
+    updated_at  DateTime
+}
