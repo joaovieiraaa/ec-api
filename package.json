@@ -4,7 +4,7 @@
   "description": "Ecommerce API",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "nodemon ./src/app.ts",
+    "dev": "npx prisma generate --schema=./src/prisma/schema.prisma && nodemon ./src/app.ts",
     "start": "node dist/app.js",
     "build": "tsc -p ."
   },

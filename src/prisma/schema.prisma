@@ -23,3 +23,77 @@ model Categories {
     updated_at    DateTime     @updatedAt
     subcategories Categories[] @relation("Subcategories")
 }
+
+model Clients {
+    id             Int       @id @default(autoincrement())
+    token          String    @unique
+    name           String?
+    surname        String?
+    email          String?
+    password       String?
+    guest          Boolean   @default(true)
+    birth_date     DateTime?
+    gender         String?
+    referral       String?
+    active         Boolean   @default(false)
+    verified_date  DateTime?
+    remember_token String?
+    last_login     DateTime?
+    created_at     DateTime
+    updated_at     DateTime
+    cart           Carts[]
+}
+
+model Carts {
+    id         Int             @id @default(autoincrement())
+    client_id  Int
+    processed  Boolean         @default(false)
+    created_at DateTime
+    updated_at DateTime
+    products   CartsProducts[]
+    client     Clients         @relation(fields: [client_id], references: [id])
+}
+
+model CartsProducts {
+    id                   Int      @id @default(autoincrement())
+    cart_id              Int
+    product_id           Int
+    product_pricings     Int
+    product_price_uni    Float
+    product_price_total  Float
+    discount_exist       Boolean  @default(false)
+    promotion_exist      Boolean  @default(false)
+    promotion_id         Int?
+    discount_value       Float?
+    discount_price_uni   Float?
+    discount_price_total Float?
+    quantity             Int
+    created_at           DateTime
+    updated_at           DateTime
+    cart                 Carts    @relation(fields: [cart_id], references: [id])
+    data                 Products @relation(fields: [product_id], references: [id])
+
+    @@map(name: "carts_products")
+}
+
+model Products {
+    id            Int             @id @default(autoincrement())
+    name          Json
+    ref           String
+    description   Json
+    specs         Json
+    details       Json
+    slug          Json
+    seo           Json?
+    active        Boolean         @default(false)
+    draft         Boolean         @default(false)
+    is_deleted    Boolean         @default(false)
+    is_variable   Boolean         @default(false)
+    is_colored    Boolean         @default(false)
+    is_collection Boolean         @default(false)
+    created_at    DateTime
+    updated_at    DateTime
+    CartsProducts CartsProducts[]
+
+    @@map(name: "products")
+}
