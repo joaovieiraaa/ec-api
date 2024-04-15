@@ -39,17 +39,17 @@ model Clients {
     verified_date  DateTime?
     remember_token String?
     last_login     DateTime?
-    created_at     DateTime
-    updated_at     DateTime
-    cart           Carts[]
+    created_at     DateTime  @default(now())
+    updated_at     DateTime  @updatedAt
+    cart           Carts?
 }
 
 model Carts {
     id         Int             @id @default(autoincrement())
-    client_id  Int
+    client_id  Int             @unique
     processed  Boolean         @default(false)
-    created_at DateTime
-    updated_at DateTime
+    created_at DateTime        @default(now())
+    updated_at DateTime        @updatedAt
     products   CartsProducts[]
     client     Clients         @relation(fields: [client_id], references: [id])
 }
@@ -68,8 +68,8 @@ model CartsProducts {
     discount_price_uni   Float?
     discount_price_total Float?
     quantity             Int
-    created_at           DateTime
-    updated_at           DateTime
+    created_at           DateTime @default(now())
+    updated_at           DateTime @updatedAt
     cart                 Carts    @relation(fields: [cart_id], references: [id])
     data                 Products @relation(fields: [product_id], references: [id])
 
@@ -91,9 +91,19 @@ model Products {
     is_variable   Boolean         @default(false)
     is_colored    Boolean         @default(false)
     is_collection Boolean         @default(false)
-    created_at    DateTime
-    updated_at    DateTime
+    created_at    DateTime        @default(now())
+    updated_at    DateTime        @updatedAt
     CartsProducts CartsProducts[]
 
     @@map(name: "products")
+}
+
+model Users {
+    id             Int      @id @default(autoincrement())
+    name           String?
+    email          String   @unique
+    password       String
+    remember_token String?
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 }

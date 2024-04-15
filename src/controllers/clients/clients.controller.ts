@@ -3,20 +3,49 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default class ClientsController {
-  static async getByToken() {
+  static async getByToken(token: string) {
     let response: any;
 
     try {
-      const data = await prisma.clients.findMany();
-
-      // console.log(req.query.token);
-      console.log(data);
-
-      // response.json(data);
-    } catch (error) {
-      response.status(500).json({ error: error });
+      response = await prisma.clients.findFirst({
+        where: {
+          token: token,
+        },
+        include: {
+          cart: {
+            where: {
+              processed: false,
+            },
+            include: {
+              products: {
+                include: {
+                  data: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (error: any) {
+      response = { error: error };
     }
+
+    return response;
+  }
+
+  static async generate(token: string) {
+    let response: any;
+
+    try {
+      response = await prisma.clients.create({
+        data: {
+          token: token,
+        },
+      });
+    } catch (error: any) {
+      response = { error: error };
+    }
+
+    return response;
   }
 }
-
-// export default ClientsController;
