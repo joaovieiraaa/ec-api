@@ -3,8 +3,12 @@ import CategoriesController from "../../controllers/categories/categories.contro
 
 const router = express.Router();
 
-router.get("/", (req: any, res: any) => {
-  CategoriesController.index(req, res);
+router.get("/", async (req, res, next) => {
+  try {
+    await CategoriesController.index(req, res);
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.post("/", (req, res) => {

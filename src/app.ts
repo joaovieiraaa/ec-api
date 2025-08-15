@@ -3,6 +3,14 @@ import cors from "cors";
 // import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import router from "./routes/routes";
+import { createClient } from "redis";
+
+export const client = createClient();
+
+client
+  .connect()
+  .then(() => console.log("Redis connected"))
+  .catch(console.error);
 
 // const env = dotenv.config();
 const app = express();

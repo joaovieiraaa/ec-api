@@ -1,6 +1,6 @@
 datasource db {
     provider = "mysql"
-    url      = "mysql://root@localhost:3306/ec_api"
+    url      = "mysql://root@localhost:3306/manulena"
 }
 
 generator client {
@@ -9,19 +9,37 @@ generator client {
 
 // CATEGORIES
 model Categories {
-    id            Int          @id @default(autoincrement())
-    parent        Categories?  @relation("Subcategories", fields: [parent_id], references: [id])
-    parent_id     Int?
-    name          Json
-    description   Json
-    slug          Json
-    color         String?
-    order         Int?
-    active        Boolean
-    is_deleted    Boolean
-    created_at    DateTime     @default(now())
-    updated_at    DateTime     @updatedAt
-    subcategories Categories[] @relation("Subcategories")
+    id                Int          @id @default(autoincrement())
+    parent            Categories?  @relation("Subcategories", fields: [parent_id], references: [id])
+    parent_id         Int?
+    name              Json
+    description       Json
+    slug              Json
+    color             String?
+    order             Int?
+    show_image_navbar Boolean
+    show_on_navbar    Boolean
+    active            Boolean
+    // is_deleted    Boolean?     @default(false)
+    created_at        DateTime     @default(now())
+    updated_at        DateTime     @updatedAt
+    subcategories     Categories[] @relation("Subcategories")
+}
+
+model Multimedias {
+    id             Int      @id @default(autoincrement())
+    zone           String   @unique
+    type           String?
+    is_base64      Boolean  @default(true)
+    id_object      Int
+    id_combination Int?
+    path           String
+    thumbnail      String?
+    order          Int?
+    alt            String?
+    default        Boolean  @default(false)
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 }
 
 model Clients {
