@@ -7,7 +7,9 @@ const prisma = new PrismaClient();
 class CategoriesController {
   static async index(req: any, response: any) {
     try {
-      const redisKey = "get-categories";
+      // await client.flushAll();
+
+      const redisKey = `get-categories-${JSON.stringify(req.query)}`;
       const cache = await client.get(redisKey);
 
       if (cache) {
@@ -26,7 +28,7 @@ class CategoriesController {
         },
       });
 
-      const result = await toArray(data);
+      const result = await toArray(data, req.query);
 
       await client.set(redisKey, JSON.stringify(result));
 

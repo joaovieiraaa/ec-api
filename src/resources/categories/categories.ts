@@ -3,26 +3,34 @@ import { PrismaClient, Prisma } from "@prisma/client";
 const prisma = new PrismaClient();
 const locale = "pt";
 
-export async function toArray(data: any) {
-  const categoryIds = [
-    ...data.map((c: any) => c.id),
-    ...data.flatMap((c: any) => (c.subcategories || []).map((s: any) => s.id)),
-  ];
+export async function toArray(data: any, params: any) {
+  const fetchImages = String(params.images).toLowerCase() === "true";
 
-  // Fetch all images in a single query
-  const images: any[] = await prisma.$queryRaw`
-    SELECT id_object, thumbnail_medium
-    FROM multimedias
-    WHERE zone = 'categories'
-      AND is_base64 = 1
-      AND multimedias.default = 1
-      AND id_object IN (${Prisma.join(categoryIds)})
-  `;
+  let imageMap: Record<number, string | null> = {};
 
-  // Map images by category id
-  const imageMap = Object.fromEntries(
-    images.map((img: any) => [img.id_object, img.thumbnail_medium])
-  );
+  if (fetchImages) {
+    const categoryIds = [
+      ...data.map((c: any) => c.id),
+      ...data.flatMap((c: any) =>
+        (c.subcategories || []).map((s: any) => s.id)
+      ),
+    ];
+
+    // Fetch all images in a single query
+    const images: any[] = await prisma.$queryRaw`
+      SELECT id_object, thumbnail_medium
+      FROM multimedias
+      WHERE zone = 'categories'
+        AND is_base64 = 1
+        AND multimedias.default = 1
+        AND id_object IN (${Prisma.join(categoryIds)})
+    `;
+
+    // Map images by category id
+    imageMap = Object.fromEntries(
+      images.map((img: any) => [img.id_object, img.thumbnail_medium])
+    );
+  }
 
   // Map categories
   return data.map((category: any) => ({
@@ -37,11 +45,11 @@ export async function toArray(data: any) {
       show_image_navbar: sub.show_image_navbar ?? false,
       show_on_navbar: sub.show_on_navbar ?? false,
       slug: sub.slug?.[locale] ?? "",
-      image: imageMap[sub.id] ?? null,
+      image: fetchImages ? imageMap[sub.id] ?? null : null,
     })),
     show_image_navbar: category.show_image_navbar ?? false,
     show_on_navbar: category.show_on_navbar ?? false,
     slug: category.slug?.[locale] ?? "",
-    image: imageMap[category.id] ?? null,
+    image: fetchImages ? imageMap[category.id] ?? null : null,
   }));
 }
